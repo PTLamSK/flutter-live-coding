@@ -41,12 +41,17 @@ class RenderLiveCodingTest extends RenderBox
 
   @override
   void performLayout() {
-    // Layout children widgets to get their `Size` values.
     RenderBox? child = firstChild;
     while (child != null) {
       _children.add(child);
       final childParentData = child.parentData as LiveCodingTestParentData?;
+
+      // Layout children widgets to get their `Size` values.
       child.layout(constraints.loosen(), parentUsesSize: true);
+      // Position each child within the `RenderLiveCodingTest` based on `constraints`
+      final dx = (constraints.maxWidth - child.size.width) / 2 * (alignment.x + 1);
+      final dy = (constraints.maxHeight - child.size.height) / 2 * (alignment.y + 1);
+      childParentData?.offset = Offset(dx, dy);
       child = childParentData?.nextSibling;
     }
 
@@ -57,15 +62,6 @@ class RenderLiveCodingTest extends RenderBox
 
       return (sizeB.width * sizeB.height).compareTo(sizeA.width * sizeA.height);
     });
-
-    // Position each child within the `RenderLiveCodingTest` size based on `constraints`
-    size = Size(constraints.maxWidth, constraints.maxHeight);
-    for (final child in _children) {
-      final childParentData = child.parentData as LiveCodingTestParentData?;
-      final dx = (size.width - child.size.width) / 2 * (alignment.x + 1);
-      final dy = (size.height - child.size.height) / 2 * (alignment.y + 1);
-      childParentData?.offset = Offset(dx, dy);
-    }
   }
 
   @override
